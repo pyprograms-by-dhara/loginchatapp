@@ -1,0 +1,38 @@
+{% extends 'chat2/base.html'%}
+{% block content %}
+ <div class="register">
+    <div class="header">
+        <h1>Register</h1>
+    </div>
+    <div class="form-widget">
+    <form method="post" enctype="multipart/form-data" action="">
+        <label for="username">Username:</label>&nbsp;
+        <input type="text" id="username" name="username" required><br><br>
+            
+        <label for="email">Email:</label>&nbsp;
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="gender">Gender:</label>&nbsp;
+        <input type="radio" name="gender" value="male">Male
+        <input type="radio" name="gender" value="female">Female<br><br>
+
+        <label for="birthdate">Birthdate:</label>&nbsp;
+        <input type="text" id="birthdate" name="birthdate" required><br><br>
+
+        <label for="city">City:</label>&nbsp;
+        <input type="text" id="city" name="city" required><br><br>
+
+        <label for="phone"> phone number:</label>&nbsp;
+        <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required><br><br>
+
+        <label for="password">Password:</label>&nbsp;
+        <input type="password" id="password" name="password" required><br><br>
+            
+        <label for="confirm_password">Confirm Password:</label>&nbsp;
+        <input type="password" id="confirm_password" name="confirm_password" required><br><br>
+            
+        <input type="submit" value="Submit" class="btn"><br><br>
+        <p>{{msg}}</p>
+    </form>
+ </div>
+{% endblock %}

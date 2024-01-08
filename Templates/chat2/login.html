@@ -1,0 +1,19 @@
+{% extends 'chat2/base.html'%}
+{% block content %}
+ <div class="box">
+    <div class="header">
+        <h1>Login</h1>
+    </div>
+    <div class="form-widget">
+    <form action="login" method="post" enctype="form-data/multipart">
+        <label >UserName :</label>&nbsp;&nbsp;
+        <input type="text" name="username" id="username" placeholder="Enter your username"><br><br>
+        <label>Password :</label>&nbsp;&nbsp;
+        <input type="password" name="password" id="password" placeholder="Enter your password"><br><br><br>
+        <input type="submit" class="btn" value="Log In"><br><br>
+    </form>
+    </div>
+    <p class="bottom">Don't have an account? &nbsp;<a href="/register" class="link">Register Here</a></p>
+    <div class="msg">{{msg}}</div>
+ </div>
+{% endblock %}
