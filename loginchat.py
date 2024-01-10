@@ -54,7 +54,9 @@ def register():
             cur.execute(sqla,(username,email,gender,birthdate,city,contact,password,fname))
             con.commit()
             msg="Successfully Registered"
-            return render_template("chat2/chatlist.html",msg=msg)
+            cur.execute("select * from register ")
+            res=cur.fetchall()
+            return render_template("chat2/chatlist.html",msg=msg,res=res,username=username)
         else:
             msg="password and confirm password must be same..."
             return render_template("chat2/register.html",msg=msg)

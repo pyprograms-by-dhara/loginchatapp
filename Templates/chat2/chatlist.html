@@ -1,15 +1,44 @@
 {% extends 'chat2/base.html'%}
 {% block content %}
 <div class="chatlist">
-    <div class="header">
-       <h1>{{username}}</h1></a>
+    <div class="header-chatlist">
+       <h1 style="margin-left:15px;display: inline-block;">{{username}}</h1></a>
+      <a href="/" ><span style="float:right;margin-top: 3px;"><input type="submit" value="Log Out" class="btn"></span></a>
     </div>
     <div class="userlist">
         {% for rec in res %}
-           <img src="{{url_for('static',filename='login_img/'+rec[7])}}" height="30" width="30" style="border-radius:15px;">
-           <a href="#" >{{rec[0]}}</a><br><br>
-           {% endfor %}
+        <div class="names">
+           <img src="{{url_for('static',filename='login_img/'+rec[7])}}" height="30" width="30" style="border-radius:15px;padding:2px;">
+           <a href="#"><button type="submit"  id="show_name" value={{rec[0]}} onclick="displayname()">{{rec[0]}}</button></a><br><br>
+        </div><br>
+        {% endfor %}
     </div>
+    <div class="room">
+        <h3 id="disp_name"></h3>
+        <form action="/chatlist" method="post">
+        <div class="message_container" >
+            <ul id="messages"></ul>
+        </div>
+        <div id="message-box">
+            <input type="text"  name="message" id="message_input" placeholder="Type a message here">
+            <button  type="submit"  onclick="sendMessage()" id="send-btn">Send</button>
+        </div>  
+        </form> 
+    </div>
+    <script>
+            function displayname()
+            {
+                const btns=document.querySelectorAll('#show_name')
+                btns.forEach(btn=>{
+                  const btns=document.querySelector('#show_name')
+                  const disp_nm=document.querySelector('#disp_name')
+                  btn.addEventListener("click",()=>{
+                      disp_nm.innerHTML=btn.value;
+                  })
+                }) 
+            }
+        </script>
 </div>
+
 {% endblock %}
 

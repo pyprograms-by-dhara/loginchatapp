@@ -65,20 +65,126 @@
 }
 /*--------chatlist.html-------*/
 .chatlist{
-    height:580px;
-    width:580px;
-    background-color: antiquewhite;
-    padding: 10px;   
+    height:650px;
+    width:1080px;
+    background-color:salmon;
+    padding: 10px;
+    margin-left: 30px;
+    border:2px solid blue; 
+}
+.header-chatlist{
+    background-color: #99CCFF;
+    color:navy;
+    padding:3px; 
 }
 .userlist{
-    margin-top:30px;
+    margin-top:10px;
+    width:250px;
+    height:595px;
+    border:2px solid pink;
+    display: inline-block;
 }
-
 
 .userlist a{
     text-decoration: none;
     font-size:18px;
     font-weight: bold;
-    color: black;
+    color:white;
 }
 
+.names{
+    background-color: #9796f0;
+    padding:1px;
+}
+.names:hover{
+    background-color: blue;
+}
+.room{
+    height:580px;
+    width:800px;
+    background-image: url('login_img/room.jpg');
+    padding: 10px;
+    float:right;
+    display: inline-block;
+    margin-top: 10px;
+}
+#disp_name{
+    background-color: saddlebrown;
+    color:white;
+    font-size:18px;
+    padding: 8px;
+    font-weight: bold;
+}
+#show_name{
+    width:80px;
+    padding: 5px;
+    background-color:purple;
+    color: white;
+    font-weight: bold;
+    border-radius: 15px
+}
+#message-box{
+    margin-top:490px;
+    bottom:0;
+    width:100%;
+    height: 50px;
+    display: flex;
+}
+#message_input{
+    flex-grow: 1;
+    padding: 10px;
+    font-size:1.1rem;
+    outline: none;
+    border:4px solid #9999FF;
+    border-right:none;
+    background-color: rgb(215, 239, 250);
+    border-bottom-left-radius: 15px;
+}
+#send-btn{
+    padding: 0 20px;
+    font-size: 1.1rem;
+    border:4px solid #9999FF;
+    border-left: none;
+    background-color: rgb(0,100,140);
+    color:white;
+    cursor:pointer;
+    border-bottom-right-radius: 15px;
+    transition: all 0.1s ease-in;
+
+}
+#send-btn:hover{
+    background-color: rgb(46,175,225);
+}
+
+.message-item{
+    background-color: whitesmoke;
+    border-radius: 10px;
+    padding: 10px;
+    width:fit-content;
+    max-width: 500px;
+    margin:10px 0;
+}
+.recv-message-item{
+    background-color: rgb(0,100,140);
+    color:white;
+    border-bottom-left-radius: 0;
+}
+.self-message-item{
+    margin-left: auto;
+    margin-right: 0;
+    border-bottom-right-radius: 0;
+}
+
+.muted-text{
+    color:grey;
+    font-size: 0.7rem;
+}
+.muted-text-white{
+    color:white;
+    font-size:0.7rem;
+}
+.member-activity{
+    text-align: center;
+    margin: 10px 0;
+    color: grey;
+}
