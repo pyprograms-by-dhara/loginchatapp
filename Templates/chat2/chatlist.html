@@ -1,4 +1,15 @@
 {% extends 'chat2/base.html'%}
 {% block content %}
-<h2>this is chatlist page</h2>
+<div class="chatlist">
+    <div class="header">
+       <h1>{{username}}</h1></a>
+    </div>
+    <div class="userlist">
+        {% for rec in res %}
+           <img src="{{url_for('static',filename='login_img/'+rec[7])}}" height="30" width="30" style="border-radius:15px;">
+           <a href="#" >{{rec[0]}}</a><br><br>
+           {% endfor %}
+    </div>
+</div>
 {% endblock %}
+

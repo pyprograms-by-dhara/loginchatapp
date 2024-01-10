@@ -13,8 +13,12 @@
         <input type="email" id="email" name="email" required><br><br>
 
         <label for="gender">Gender:</label>&nbsp;
-        <input type="radio" name="gender" value="male">Male
-        <input type="radio" name="gender" value="female">Female<br><br>
+        <input type="radio" name="gender" value="male" checked>
+        <label for="Male">Male</label> &nbsp;&nbsp;
+       
+        <input type="radio" name="gender" value="female">
+        <label for="Female">Female</label><br><br>
+        
 
         <label for="birthdate">Birthdate:</label>&nbsp;
         <input type="text" id="birthdate" name="birthdate" required><br><br>
@@ -30,8 +34,11 @@
             
         <label for="confirm_password">Confirm Password:</label>&nbsp;
         <input type="password" id="confirm_password" name="confirm_password" required><br><br>
+        
+        <input type="file"  name="photo" required><br><br>
             
         <input type="submit" value="Submit" class="btn"><br><br>
+        <p class="bottom">Already have an Account... &nbsp;<a href="/" class="link">Log In</a></p>
         <p>{{msg}}</p>
     </form>
  </div>
