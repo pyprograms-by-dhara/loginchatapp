@@ -107,6 +107,7 @@
     float:right;
     display: inline-block;
     margin-top: 10px;
+    
 }
 #disp_name{
     background-color: saddlebrown;
@@ -123,29 +124,105 @@
     font-weight: bold;
     border-radius: 15px
 }
+#frm1{
+    margin:80px;
+    font-weight: bold;
+}
+.join_btn{
+    background-color:blue;
+    color:white;
+    padding: 5px;
+    font-weight: bold;
+    border-radius: 12px;
+    margin-left: 15px;
+}
+
+
+/*------chatroom---------*/
+.chatarea{
+   
+    background-image: url('login_img/room.jpg');
+    height: 100%;
+    border:2px solid red;
+    display: grid;
+    grid-template-rows: repeat(2,auto) 1fr;
+    padding: 0 30px;
+    padding-bottom: 30px;
+}
+.head{
+    height:90px;
+    width:100%;
+    padding: 5px;
+    background-color: palevioletred;
+    margin-top: 10px;
+}
+#home-header b,#room-code-display b {
+    color:navy;
+    background-color:white;
+    padding:2px;
+    margin-top: 2px;
+    border-radius: 10px;
+    outline: navy;
+}
+#room-subsection{
+    margin-bottom: 20px;
+}
+#room-code-display{
+    color:rgb(0,73,101);
+}
+#room-code-display{
+    font-family: monospace;
+    padding: 8px 5px;
+}
+.leave_btn{
+    background-color:purple;
+    color:white;
+    padding: 5px;
+    font-weight: bold;
+    border-radius: 12px;
+}
+#chat-room-widget{
+    height: 100%;
+    width:100%;
+    position: relative;;
+    border:4px solid purple;
+    border-radius: 5px;
+}
+.message_container{
+    position:absolute;
+    height: calc(100% - 80px);
+    width:100%;
+    overflow-y: auto;
+    background-color:transparent;
+    padding:10px;
+}
+.message_container > ul{
+    list-style: none;
+}
 #message-box{
-    margin-top:490px;
+    margin-top:430px;
     bottom:0;
     width:100%;
     height: 50px;
     display: flex;
 }
+
 #message_input{
     flex-grow: 1;
     padding: 10px;
     font-size:1.1rem;
     outline: none;
-    border:4px solid #9999FF;
+    border:4px solid palevioletred;
     border-right:none;
-    background-color: rgb(215, 239, 250);
+    background-color:lightpink;
     border-bottom-left-radius: 15px;
 }
 #send-btn{
     padding: 0 20px;
     font-size: 1.1rem;
-    border:4px solid #9999FF;
+    border:4px solid palevioletred;
     border-left: none;
-    background-color: rgb(0,100,140);
+    background-color: purple;
     color:white;
     cursor:pointer;
     border-bottom-right-radius: 15px;
@@ -157,34 +234,30 @@
 }
 
 .message-item{
-    background-color: whitesmoke;
+    background-color:brown;
+    color:white;
     border-radius: 10px;
     padding: 10px;
     width:fit-content;
     max-width: 500px;
     margin:10px 0;
 }
+
+.self-message-item{
+    margin-left: auto;
+    margin-right: 0;
+    border-bottom-right-radius: 0;    
+}
 .recv-message-item{
     background-color: rgb(0,100,140);
     color:white;
     border-bottom-left-radius: 0;
 }
-.self-message-item{
-    margin-left: auto;
-    margin-right: 0;
-    border-bottom-right-radius: 0;
-}
-
 .muted-text{
-    color:grey;
+    color:white;
     font-size: 0.7rem;
 }
 .muted-text-white{
     color:white;
     font-size:0.7rem;
-}
-.member-activity{
-    text-align: center;
-    margin: 10px 0;
-    color: grey;
 }
