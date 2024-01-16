@@ -64,68 +64,81 @@ def register():
         else:
             msg="password and confirm password must be same..."
             return render_template("chat2/register.html",msg=msg)
-    return render_template("chat2/register.html")
+    return render_template("chat2/register.html")   
 
 @app.route("/chatroom",methods=['GET','POST'])
 def chatroom():
     session.clear()
     if request.method=="POST":
         username=request.form.get("username")
+        receiver=request.form.get("receiver")
         roomcode=request.form.get("roomcode")
         new_room = {
                 'members': 0,
-                'messages': []
+                'receiver':"",
+                'messages':[]
             }
         rooms[roomcode] = new_room
-
+        
         session['username']=username
+        session['receiver']=receiver
         session['roomcode']=roomcode
         messages = rooms[roomcode]['messages']
-    return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages)
+        receiver=rooms[roomcode]['receiver']
+        print(rooms[roomcode])
+    return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'])
 
 @socketio.on('connect')
 def handle_connect():
     name=session.get('username')
+    rec_id=session.get('receiver')
     room=session.get('roomcode')
     if name is None or room is None:
         return 
-    if room not in rooms:
-        leave_room(room)
-    join_room(room)
-    print(f"{name} joined room {room}")
+    if room not in rooms and rec_id not in rooms:
+        leave_room(rec_id)
+    join_room(rec_id)
+    print(f"{name} joined room {rec_id}")
     send({
         "sender":"",
-        "message":f"{name} has entered the chat"
-    },to=room)
+        "message":f"{name} has joined {rec_id}"
+    },to=rec_id)
+    print(rec_id)
     rooms[room]["members"]+=1
+    rooms[room]["receiver"]=rec_id
     print(rooms[room])
 
 @socketio.on('message')
 def handle_message(payload):
     name=session.get('username')
+    rec_id=session.get('receiver')
     room=session.get('roomcode')
     message = {
         "sender": name,
+        "receiver":rec_id,
         "message": payload['data']
     }
-    print(message['message'])
-    send(message, to=room)
+    print(message)
+    send(message, to=name)
+    send(message,to=rec_id)
     rooms[room]["messages"].append(message)
 
 @socketio.on('disconnect')
 def handle_disconnect():
     name=session.get('username')
+    rec_id=session.get('receiver')
     room=session.get('roomcode')
-    leave_room(room)
+    leave_room(rec_id)
 
     if room in rooms:
         rooms[room]["members"]-=1
         if rooms[room]["members"]<=0:
-            del rooms[room]
+            del rooms[rec_id]
     send({
             "message":f"{name} has left the chat",
             "sender" : ""  
-         },to=room)
+
+         },to=rec_id)
     
 if __name__=="__main__":
     app.debug=True

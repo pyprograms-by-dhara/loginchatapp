@@ -4,8 +4,8 @@
   <div class="head">
     <h2 id="home-header"><b>{{username}}</b> - chat room</h2>
     <div id="room-subsection">
-            <h4 id="room-code-display">Chat with : <b>{{roomcode}}</b></h4>
-        <button class="leave_btn" value="Leave the chat" >Leave the chat</button><br>
+            <h4 id="room-code-display">Chat with : <b>{{roomcode}}</b>&nbsp;&nbsp;&nbsp;Receiver :<b>{{receiver}}</b></h4>
+    <button type="submit" class="leave_btn" value="Leave the chat">Leave the chat</button><br>
     </div>
   </div>
 <div id="chat-room-widget">
@@ -20,25 +20,43 @@
 
 <script>
     const socket=io();
-
+    var messages=document.getElementById("messages");
         socket.on("message",function(message){
-           createChatItem(message.message,message.sender);
+            console.log(message)
+            if(message.sender=="{{username}}"){
+                createChatItem(message.message,message.sender,message.receiver); 
+            }
+            if(message.receiver=="{{username}}"){
+                createrecvitem(message.message,message.sender,message.receiver)
+            }
+            if(message.sender==""){
+                 entrymsg(message.message)
+             }
         });
+        function entrymsg(message){
+            content=`<p class="member-activity">${message}</p>`;
+            messages.innerHTML=content
+        }
+        function createrecvitem(message,sender,receiver){
+            var content=`<li class="message-item recv-message-item">
+                                 <p>${message}</p>
+                                 <small class="muted-text-white">${new Date().toLocaleString()}</small>
+                                 </li>`
+            messages.innerHTML+=content
+        }
 
-        function createChatItem(message,sender){
-            var messages=document.getElementById("messages");
-            if(sender===""){
-                content=`<p class="member-activity">${message}</p>`;
-            }
-            else{
-                var senderIsUser = "{{username}}" === sender;
-                var content=`<li class="message-item ${senderIsUser ? "self-message-item" :"recv-message-item"}">
-                                <p>${message}</p>
-                                <small class="${senderIsUser ? "muted-text" :"muted-text-white"}">${new Date().toLocaleString()}</small>
-                             </li>`;
-            }
+        function createChatItem(message,sender,receiver)
+        {
+            console.log(message)
+            
+                console.log(sender)
+                
+                var content=`<li class="message-item self-message-item">
+                                 <p>${message}</p>
+                                 <small class="muted-text">${new Date().toLocaleString()}</small>
+                                 </li>`
+            
             messages.innerHTML+=content;
-        
         }
        
        function sendMessage(){
@@ -48,10 +66,12 @@
            socket.emit("message",{data:msg });
            msgInput.value="";
        }
+       
 </script>
 {% for message in messages %}
 <script>
-    createChatItem("{{message.message}}","{{message.sender}}");
+    createChatItem("{{message.message}}","{{message.sender}}","{{message.receiver}}");
+    createrecvItem("{{message.message}}","{{message.sender}}","{{message.receiver}}");
 </script>
 {% endfor %}
 </div>
