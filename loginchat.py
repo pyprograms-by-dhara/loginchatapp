@@ -28,7 +28,7 @@ def home():
             print("login successfully...")
             cur.execute("select * from register ")
             res=cur.fetchall()
-            return render_template("chat2/chatlist.html",userid=username,res=res)
+            return render_template("chat2/chatlist.html",username=username,res=res)
     return render_template("chat2/login.html",msg=msg)
 
 @app.route('/register',methods=['GET','POST'])
@@ -50,7 +50,8 @@ def register():
         fname=file.filename
         f=os.path.join(app.config['UPLOAD_FOLDER'],"login_img/"+fname)
         file.save(f)
-
+        session['username']=username
+        print(session['username'])
         if password == confirm_pass:
             con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
             cur=con.cursor()
@@ -60,11 +61,21 @@ def register():
             msg="Successfully Registered"
             cur.execute("select * from register ")
             res=cur.fetchall()
-            return render_template("chat2/chatlist.html",msg=msg,res=res,userid=username)
+            return render_template("chat2/chatlist.html",msg=msg,res=res,username=username)
         else:
             msg="password and confirm password must be same..."
             return render_template("chat2/register.html",msg=msg)
-    return render_template("chat2/register.html")   
+    return render_template("chat2/register.html")  
+
+@app.route("/chatlist_back") 
+def chatlist_back():
+    username=request.args.get("username")
+    con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
+    cur=con.cursor()
+    cur.execute("select * from register ")
+    res=cur.fetchall()
+    return render_template("chat2/chatlist_back.html",username=username,res=res)
+
 
 @app.route("/chatroom",methods=['GET','POST'])
 def chatroom():
@@ -87,6 +98,30 @@ def chatroom():
         receiver=rooms[roomcode]['receiver']
         print(rooms[roomcode])
     return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'])
+
+@app.route("/display_data")
+def display_data():
+    user=request.args.get('user_id')
+    name=session.get('username')
+    con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
+    cur=con.cursor()
+    cur.execute("select * from register where username=%s",user)
+    res=cur.fetchall()
+    return render_template("chat2/display_data.html",username=name,res=res)
+
+@app.route("/delete_data")
+def delete_data():
+    user=request.args.get('del_id')
+    name=session.get('username')
+    con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
+    cur=con.cursor()
+    cur.execute("delete from register where username=%s",user)
+    con.commit()
+    con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
+    cur=con.cursor()
+    cur.execute("select * from register")
+    res=cur.fetchall()
+    return render_template("chat2/chatlist_back.html",res=res,username=name)
 
 @socketio.on('connect')
 def handle_connect():

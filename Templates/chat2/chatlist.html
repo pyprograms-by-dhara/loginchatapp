@@ -1,0 +1,51 @@
+{% extends 'chat2/base.html'%}
+{% block content %}
+<div class="chatlist">
+    <div class="header-chatlist">
+       <h1  id="header1"style="margin-left:15px;display: inline-block;">{{username}}</h1></a>
+      <a href="/" ><span style="float:right;margin-top: 3px;"><input type="submit" value="Log Out" class="btn"></span></a>
+    </div>
+    <div class="userlist">
+        {% for rec in res %}
+        <div class="names">
+           <img src="{{url_for('static',filename='login_img/'+rec[7])}}" height="30" width="30" style="border-radius:15px;padding:2px;">
+          <button type="submit"  id="show_name" value={{rec[0]}} onclick="displayname()">{{rec[0]}}</button><br><br>
+          <a href="/display_data?user_id={{rec[0]}}">Display</a>&nbsp;&nbsp;
+          <a href='/delete_data?del_id={{rec[0]}}' onclick="return confirm('Are you sure to delete?{{rec[0]}}')">Delete</a><br>
+        </div><br>
+        {% endfor %}
+    </div>
+    <div class="room">
+        <h3 id="disp_name"></h3>
+        <form action="/chatroom" method="post" id="frm1" enctype="multipart/form-data">
+            <div class="join"><br><br>
+              <label for="username">Username</label>
+              <input type="text" name="username" value="{{username}}" readonly=true><br><br>
+              <label for="receiver"> Chat with</label>
+              <input type="text" name="receiver" id="r_id" ><br><br>
+              <label for="roomcode">Roomcode</label>
+              <input type="text" name="roomcode" ><br><br>
+             <button type="submit" class="join_btn">Join personal chat</button>
+            </div>
+        </form> 
+    </div>
+</div>
+    <script>    
+            function displayname()
+            {
+                const btns=document.querySelectorAll('#show_name')
+                btns.forEach(btn=>{
+                  const btns=document.querySelector('#show_name')
+                  const disp_nm=document.querySelector('#disp_name')
+                  const r_id=document.querySelector("#r_id")
+                  btn.addEventListener("click",()=>{
+                     disp_nm.innerHTML=btn.value;
+                     r_id.value=disp_nm.innerHTML;
+                     
+                  })
+                })   
+            }  
+            
+     </script>
+{% endblock %}
+

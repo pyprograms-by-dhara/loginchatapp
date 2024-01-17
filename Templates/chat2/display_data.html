@@ -1,0 +1,29 @@
+{% extends 'chat2/base.html'%}
+{% block content %}
+<div class="display_data">
+<table align="center" border="1" style="background-color:rgb(133, 202, 204);height:100%;width:100%;">
+   <!--- <tr>
+        <th  colspan="2" bgcolor="pink" style="font-size:22px;padding:5px;letter-spacing:2px;color:crimson;font-weight:bolder;">{{username}}</th>
+    </tr>-->
+   {% for rec in res %}
+    <tr><td><label>Username</label></td>
+        <td>{{rec[0]}}</td></tr>
+    <tr><td><label>Email</label></td>
+        <td>{{rec[1]}}</td></tr>
+    <tr><td><label>Gender</label></td><label></label>
+        <td>{{rec[2]}}</td></tr>
+    <tr><td><label>Birthdate</label></td>
+        <td>{{rec[3]}}</td></tr>
+    <tr><td><label>City</label></td>
+        <td>{{rec[4]}}</td></tr>
+    <tr><td><label>Contact</label></td>
+        <td>{{rec[5]}}</td></tr>
+    <tr> <td><label>Photo</label></td>
+    <td><img src="{{url_for('static',filename='login_img/'+rec[7])}}" height="100" width="100" style="border-radius:10px;border:solid 2px pink;margin-left: 15px;"></td>
+    </tr>
+    <tr> <th  colspan="2"> <a href="/chatlist_back?username={{username}}"><button class="back">Back</button></a></th></tr>
+    {% endfor %}
+</table>
+</div>
+   
+{% endblock%}
