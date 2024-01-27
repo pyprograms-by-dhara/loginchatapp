@@ -2,12 +2,51 @@ from flask import Flask,render_template,request,session,flash
 from flask_socketio import SocketIO,emit,send,join_room,leave_room
 import pymysql
 import os
+import threading
+import datetime
 
 app=Flask(__name__)
 app.secret_key="login"
 socketio=SocketIO(app)
 
 rooms={}
+
+def message_save(message):
+    con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
+    cur=con.cursor()
+    sender=message['sender']
+    receiver=message['receiver']
+    message1=message['message']
+    
+    x = datetime.datetime.now()
+    y=str(x.strftime('%d-%m-%Y'))+" "+str(x.strftime('%X'))
+
+    cur.execute("insert into messages(sender,receiver,messages,datetime)values(%s,%s,%s,%s)",(sender,receiver,message1,y))
+    con.commit()
+
+def show_data():
+    name=session.get('username')
+    rec_id=session.get('receiver')
+    room=session.get('roomcode')
+    con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
+    cur=con.cursor()
+    cur.execute("select messages,datetime from messages where sender=%s and receiver=%s",(name,rec_id))
+    hist=cur.fetchall()
+
+    cur.execute("select messages,datetime from messages where sender=%s and receiver=%s",(rec_id,name))
+    recv_hist=cur.fetchall()
+    if hist and recv_hist:
+        return hist,recv_hist
+    if hist:
+        recv_hist="no receiving reply"
+        return hist,recv_hist
+    if  recv_hist:
+        hist="no sending reply"
+        return hist,recv_hist
+    if not hist and not recv_hist:
+        a="no history"
+        b="no history"
+        return a,b
 
 @app.route('/',methods=['GET','POST'])
 def home():
@@ -18,6 +57,7 @@ def home():
         session['user']=username
         con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
         cur=con.cursor()
+        
         cur.execute("SELECT username,password FROM register")
         res1=cur.fetchall()
         if (username , password) not in res1:
@@ -96,8 +136,13 @@ def chatroom():
         session['roomcode']=roomcode
         messages = rooms[roomcode]['messages']
         receiver=rooms[roomcode]['receiver']
-        print(rooms[roomcode])
-    return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'])
+        hist,recv_hist=show_data()
+        print(len(hist))
+        if (hist=="no sending reply"):
+            return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'],recv_hist=recv_hist)
+        if (recv_hist=="no receiving reply"):
+            return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'],hist=hist)
+    return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'],hist=hist,recv_hist=recv_hist)
 
 @app.route("/display_data")
 def display_data():
@@ -153,10 +198,14 @@ def handle_message(payload):
         "receiver":rec_id,
         "message": payload['data']
     }
-    print(message)
+    thread=threading.Thread(target=message_save,args=(message,))
+    thread.start()
+    
     send(message, to=name)
     send(message,to=rec_id)
     rooms[room]["messages"].append(message)
+    
+    
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -172,8 +221,9 @@ def handle_disconnect():
     send({
             "message":f"{name} has left the chat",
             "sender" : ""  
-
          },to=rec_id)
+
+
     
 if __name__=="__main__":
     app.debug=True

@@ -2,9 +2,6 @@
 {% block content %}
 <div class="display_data">
 <table align="center" border="1" style="background-color:rgb(133, 202, 204);height:100%;width:100%;">
-   <!--- <tr>
-        <th  colspan="2" bgcolor="pink" style="font-size:22px;padding:5px;letter-spacing:2px;color:crimson;font-weight:bolder;">{{username}}</th>
-    </tr>-->
    {% for rec in res %}
     <tr><td><label>Username</label></td>
         <td>{{rec[0]}}</td></tr>
