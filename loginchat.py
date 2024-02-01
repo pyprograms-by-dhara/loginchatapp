@@ -3,7 +3,8 @@ from flask_socketio import SocketIO,emit,send,join_room,leave_room
 import pymysql
 import os
 import threading
-import datetime
+import datetime 
+import numpy as np
 
 app=Flask(__name__)
 app.secret_key="login"
@@ -19,7 +20,7 @@ def message_save(message):
     message1=message['message']
     
     x = datetime.datetime.now()
-    y=str(x.strftime('%d-%m-%Y'))+" "+str(x.strftime('%X'))
+    y=str(x.strftime('%d-%m-%Y'))+" "+str(x.strftime('%I:%M:%S%p'))
 
     cur.execute("insert into messages(sender,receiver,messages,datetime)values(%s,%s,%s,%s)",(sender,receiver,message1,y))
     con.commit()
@@ -30,23 +31,30 @@ def show_data():
     room=session.get('roomcode')
     con=pymysql.connect(host='localhost',user='root',password='',db='loginchat')
     cur=con.cursor()
-    cur.execute("select messages,datetime from messages where sender=%s and receiver=%s",(name,rec_id))
+    cur.execute("select msg_id from messages where sender=%s and receiver=%s",(name,rec_id) )
     hist=cur.fetchall()
 
-    cur.execute("select messages,datetime from messages where sender=%s and receiver=%s",(rec_id,name))
+    myarr=[]
+    for i in hist:
+        myarr.append(i[0])
+
+    cur.execute("select msg_id from messages where sender=%s and receiver=%s",(rec_id,name))
     recv_hist=cur.fetchall()
-    if hist and recv_hist:
-        return hist,recv_hist
+
+    for j in recv_hist:
+        myarr.append(j[0])
+
+    print(myarr.sort())
+    list1=[]
+    for c in myarr:
+        cur.execute("select * from messages where msg_id=%s",c)
+        res1=cur.fetchall()
+        
+        list1.append(res1)
+    hist=list1
+
     if hist:
-        recv_hist="no receiving reply"
-        return hist,recv_hist
-    if  recv_hist:
-        hist="no sending reply"
-        return hist,recv_hist
-    if not hist and not recv_hist:
-        a="no history"
-        b="no history"
-        return a,b
+        return hist
 
 @app.route('/',methods=['GET','POST'])
 def home():
@@ -64,7 +72,6 @@ def home():
             msg="Invalid username or password...please try again"
             return render_template("chat2/login.html",msg=msg)
         else:
-
             print("login successfully...")
             cur.execute("select * from register ")
             res=cur.fetchall()
@@ -136,13 +143,10 @@ def chatroom():
         session['roomcode']=roomcode
         messages = rooms[roomcode]['messages']
         receiver=rooms[roomcode]['receiver']
-        hist,recv_hist=show_data()
-        print(len(hist))
-        if (hist=="no sending reply"):
-            return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'],recv_hist=recv_hist)
-        if (recv_hist=="no receiving reply"):
+        hist=show_data()
+        if (hist):
             return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'],hist=hist)
-    return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'],hist=hist,recv_hist=recv_hist)
+    return render_template("chat2/chatroom.html",username=username,roomcode=roomcode,messages=messages,receiver=session['receiver'],hist=hist)
 
 @app.route("/display_data")
 def display_data():
@@ -196,7 +200,7 @@ def handle_message(payload):
     message = {
         "sender": name,
         "receiver":rec_id,
-        "message": payload['data']
+        "message":payload['data']
     }
     thread=threading.Thread(target=message_save,args=(message,))
     thread.start()
@@ -204,9 +208,8 @@ def handle_message(payload):
     send(message, to=name)
     send(message,to=rec_id)
     rooms[room]["messages"].append(message)
-    
-    
-
+    print(rooms[room]["messages"])
+  
 @socketio.on('disconnect')
 def handle_disconnect():
     name=session.get('username')
@@ -222,8 +225,6 @@ def handle_disconnect():
             "message":f"{name} has left the chat",
             "sender" : ""  
          },to=rec_id)
-
-
     
 if __name__=="__main__":
     app.debug=True

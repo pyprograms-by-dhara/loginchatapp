@@ -4,9 +4,9 @@
   <div class="head">
     <h2 id="home-header"><b>{{username}}</b> - chat room  </h2>
     <div id="room-subsection">
-            <h4 id="room-code-display">Chat with : <b>{{roomcode}}</b>&nbsp;&nbsp;&nbsp;Receiver :<b>{{receiver}}</b></h4>
-            <a href="/chatlist_back?username={{username}}"> <button type="submit" class="leave_btn" value="Leave the chat">Leave the chat</button></a>&nbsp;
-             <button type="submit" class="leave_btn" name="history" onclick="show_msg()">check history</button>
+        <h4 id="room-code-display">Chat with : <b>{{roomcode}}</b>&nbsp;&nbsp;&nbsp;Receiver : <b>{{receiver}}</b></h4>
+        <a href="/chatlist_back?username={{username}}"><button type="submit" class="leave_btn" value="Leave the chat">Leave the chat</button></a>&nbsp;
+        <button type="submit" class="leave_btn" name="history" onclick="show_msg()">check history</button>
     </div>
   </div>
 <div id="chat-room-widget">
@@ -22,9 +22,9 @@
 <script>
     const socket=io();
     var messages=document.getElementById("messages");
-       
-        socket.on("message",function(message){
-           
+    //---------------------------code for listening message-------------------------------------------
+        socket.on("message",function(message)
+        { 
             if(message.sender=="{{username}}"){
                 createChatItem(message.message,message.sender,message.receiver); 
             }
@@ -35,101 +35,84 @@
                  entrymsg(message.message)
              }
         });
-        function entrymsg(message){
+    //-------------------------function for entry message display-----------------------------------------
+        function entrymsg(message)
+        {
             content=`<p class="member-activity">${message}</p>`;
             messages.innerHTML=content
         }
-        function createrecvitem(message,sender,receiver){
+    //-------------------------function for receiving message display-----------------------------------------
+        function createrecvitem(message,sender,receiver)
+        {
             var content=`<li class="message-item recv-message-item">
                                  <p>${message}</p>
                                  <small class="muted-text-white">${new Date().toLocaleString()}</small>
                                  </li>`
             messages.innerHTML+=content
         }
-        function show_msg()
-        {
-            console.log("{{hist}}")
-            if ("{{hist}}"=="no history" && "{{recv_hist}}"=="no history"){
-                ans="no history"
-                content=`<p class="member-activity">${ans}</p>`;
-                messages.innerHTML=content
-           }
-           else{
-           i="{{hist}}",j="{{recv_hist}}"
-           console.log(i)
-           if(!(i))
-           {
-            ans="no sending history"
-                content=`<p class="member-activity">${ans}</p>`;
-                messages.innerHTML=content
-                var content=`<li class="message-item recv-message-item">
-                                 <p>${j}</p>
-                                 </li>`
-                                 messages.innerHTML=content
-           }
-           if(!(j))
-           {
-            ans="no receiving history"
-                content=`<p class="member-activity">${ans}</p>`;
-                messages.innerHTML=content
-                console.log(i)
-                var content=`<li class="message-item self-message-item">
-                                 <p>${i}</p>
-                                 </li>`
-                                 messages.innerHTML=content
-           }
-           
-           if(i && j)
-           {
-            k=i.split(")")[0]
-            m=k.split(" ")[2]
-            h=j.split(")")[0]
-            d=h.split(" ")[2]
-            console.log(m)
-            console.log(d)
-            
-            var content1=`<li class="message-item self-message-item">
-                                 <p>${k}</p>
-                                 </li>`
-            var content2=`<li class="message-item recv-message-item">
-                                 <p>${h}</p>
-                                 </li>`     
-           }
-        
-           if(m>d)
-            {
-                    messages.innerHTML+=content2
-                    messages.innerHTML+=content1
-            }
-            else
-            {
-                    messages.innerHTML+=content1
-                    messages.innerHTML+=content2
-        
-            }
-        
-
-           
-        } 
-        }
+     //-------------------------function for sending message display-----------------------------------------
         function createChatItem(message,sender,receiver)
             {  
                 var content=`<li class="message-item self-message-item">
-                                 <p>${message}</p>
-                                 <small class="muted-text">${new Date().toLocaleString()}</small>
+                            <p>${message}</p>
+                            <small class="muted-text">${new Date().toLocaleString()}</small>
+                            </li>`
+                messages.innerHTML+=content;
+            }
+     //-------------------------function for send message-----------------------------------------
+            function sendMessage()
+            {
+                var msgInput=document.getElementById("message_input")
+                if(msgInput.value==="")return;
+                var msg=msgInput.value;
+                socket.emit("message",{data:msg });
+                msgInput.value="";
+            }
+    //-------------------------function for history message display-----------------------------------------  
+        function show_msg()
+        {  
+            k="{{hist}}"
+            console.log(k)
+            ans="No history"
+            if(k=="None"){
+                content=`<p class="member-activity">${ans}</p>`;
+                messages.innerHTML=content
+            }
+            else{
+                ans="Chat history"
+                content=`<p class="member-activity">${ans}</p>`;
+                messages.innerHTML=content
+            }
+            for (i of k.split("("))
+            {
+                a=i.split(",")[0].split(";")[1]
+                newuser="{{username}}"+"&#39"
+                if(a==newuser)
+                {
+                    if(a=="")break;
+                    var content1=`<li class="message-item self-message-item">
+                                    <p>${i.split(",")[2]}</p>
+                                    <small class="muted-text">${i.split(",")[3]}</small>
+                                </li>`
+                    messages.innerHTML+=content1
+                }
+                else
+                {
+                    if(a=="")break;
+                    if(i=="None")break;
+                    if(i=="")continue;
+                    if(i=="[")continue;
+                    var content2=`<li class="message-item recv-message-item">
+                                    <p>${i.split(",")[2]}</p>
+                                    <small class="muted-text">${i.split(",")[3]}</small>
                                  </li>`
+                        
+                    messages.innerHTML+=content2    
+                }  
+            } messages.innerHTML+=`<hr/>`   
+        }  
             
-            messages.innerHTML+=content.value;
-        }
-       
-       function sendMessage(){
-           var msgInput=document.getElementById("message_input")
-           if(msgInput.value==="")return;
-           var msg=msgInput.value;
-           socket.emit("message",{data:msg });
-           msgInput.value="";
-       }
-       
+           
 </script>
 {% for message in messages %}
 <script>
@@ -137,14 +120,7 @@
     createrecvItem("{{message.message}}","{{message.sender}}","{{message.receiver}}");
 </script>
 {% endfor %}
-{% if hist  %}
-<script>
-   show_msg("{{hist}}");
-   show_msg("{{recv_hist}}");
 
-
-</script>
-{% endif %}
 </div>
 
 {% endblock %}
